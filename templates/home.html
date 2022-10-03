@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+        <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+
+    {# Bootstrap #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+		<!-- JS -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <title>메인페이지</title>
+
+
+    <script>
+        $(document).ready(function () {
+            listing()
+            comment_get()
+
+            $('.genre-div-k').hide();
+            $('.genre-div-p').hide();
+
+            $('#k-toggle').click(function () {
+                $('.genre-div-k').toggle();
+            });
+        })
+
+    </script>
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/home">
+            <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary">
+                        <strong onclick="logout()">로그아웃</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-primary" href="/user/{{ user_info.username }}">
+                        <strong>마이페이지</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="tabs is-centered is-large">
+    <ul>
+        <li><a id="k-toggle">장르</a></li>
+    </ul>
+</div>
+<div class="genre-div-k">
+    <button onclick="genre('발라드')" class="button">발라드</button>
+    <button onclick="genre('POP')" class="button">팝</button>
+    <button onclick="genre('댄스')" class="button">댄스</button>
+    <button onclick="genre('R&B','Soul')" class="button">R&B/소울</button>
+    <button onclick="genre('록','메탈')" class="button">록/메탈</button>
+    <button onclick="genre('랩','힙합')" class="button">랩/힙합</button>
+    <button onclick="genre('일렉트로니카','하우스','클럽')" class="button">일렉트로니카</button>
+    <button onclick="genre('인디')" class="button">인디</button>
+    <button onclick="genre('블루스','포크','컨트리')" class="button">블루스/포크/컨트리</button>
+</div>
+
+<div class="url-button-div">
+    <button class="button is-danger url-button" onclick='$("#modal-post").addClass("is-active")'>등록하기</button>
+</div>
+<div class="modal" id="modal-post">
+    <div class="modal-background" onclick='$("#modal-post").removeClass("is-active")'></div>
+    <div class="modal-content">
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="field">
+                        <span class="article-span">URL</span>
+                        <input id="url-input" class="input is-link" type="text" placeholder="URL을 입력하세요">
+                    </div>
+                    <nav class="level is-mobile">
+                        <div class="level-left">
+
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <a class="button is-danger" onclick="post()">등록하기</a>
+                            </div>
+                            <div class="level-item">
+                                <a class="button is-dark is-outlined"
+                                   onclick='$("#modal-post").removeClass("is-active")'>취소</a>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </article>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"
+            onclick='$("#modal-post").removeClass("is-active")'></button>
+</div>
+
+<div class="containers">
+    <div class="content" id="card-div">
+
+    </div>
+    <div class="moveTopBtn" style="cursor:pointer;" onclick="window.scrollTo(0,0);">
+        <span class="material-symbols-outlined" style="font-size: 50px">
+            expand_less
+        </span>
+    </div>
+</div>
+<div class="modalBox displayNone" id="modalBox">
+    <div class="modalBack">
+        <button onclick="closeBtn()" class="delete"></button>
+        <section class="modalTop" id="modalInfo">
+        </section>
+        {# 댓글 기록하는 창 #}
+        <div class="modalCommentBox">
+            <div class="input-group modalComment">
+                <span class="input-group-text">댓글 남기기</span>
+                <textarea id="commentWrite" placeholder="최대 90글자까지 입력이 가능합니다." class="form-control"
+                          aria-label="With textarea"></textarea>
+                <button onclick="comment_post()" type="button" class="btn btn-dark">댓글 쓰기</button>
+            </div>
+            {# 댓글 기록되는 창 #}
+            <div id="modalCommentsWrap">
+                <div class="container card mb-3 modalComments">
+                    <div class="row g-0 comment">
+                        <figure class="image is-48x48">
+                            <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">
+                        </figure>
+                        <div class="col-md-11 commentProfileBody">
+                            <div class="card-body">
+                                <p class="card-title">닉네임</p>
+                                <p class="card-text">댓글내용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container card mb-3 modalComments">
+                    <div class="row g-0 comment">
+                        <figure class="image is-48x48">
+                            <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">
+                        </figure>
+                        <div class="col-md-11 commentProfileBody">
+                            <div class="card-body">
+                                <p class="card-title">닉네임</p>
+                                <p class="card-text">댓글내용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container card mb-3 modalComments">
+                    <div class="row g-0 comment">
+                        <figure class="image is-48x48">
+                            <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">
+                        </figure>
+                        <div class="col-md-11 commentProfileBody">
+                            <div class="card-body">
+                                <p class="card-title">닉네임</p>
+                                <p class="card-text">댓글내용</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

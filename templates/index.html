@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta property="og:title" content="로그인 테스트" />
+    <meta property="og:description" content="로그인 테스트 페이지 입니다." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1364&q=80" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+        <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+
+    {# Bootstrap #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+		<!-- JS -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <title>메인페이지</title>
+
+    <style>
+        .loginBtn {
+            display: none;
+        }
+
+        .logoutBtn {
+            display: flex;
+        }
+
+        .mypageBtn {
+            display: flex;
+        }
+    </style>
+
+    <script>
+
+        $(document).ready(function () {
+            listing()
+
+            $('.genre-div-k').hide();
+            $('.genre-div-p').hide();
+
+            $('#k-toggle').click(function () {
+                $('.genre-div-k').toggle();
+            });
+        })
+
+        window.addEventListener('load', function () {
+                let token = document.cookie
+                let header1 = document.querySelector('.loginBtn')
+                let header2 = document.querySelector('.logoutBtn')
+                let header3 = document.querySelector('.mypageBtn')
+                if (token != '') {
+                    console.log(token)
+                    header1.style.display = 'none';
+                    header2.style.display = 'flex';
+                    header3.style.display = 'flex';
+                } else {
+                    header1.style.display = 'flex';
+                    header2.style.display = 'none';
+                    header3.style.display = 'none';
+                    console.log('로그인 되었습니다.')
+                }
+            }
+        )
+
+        function comment_get(getUrl) {
+            $('#modalCommentsWrap').empty()
+            $.ajax({
+                type: 'GET',
+                url: '/comment',
+                data: {},
+                success: function (response) {
+                    let rows = response['comments']
+                    console.log(rows)
+                    for (let i = 0; i < rows.length; i++) {
+                        let comment = rows[i]['comment']
+                        let url = rows[i]['url']
+                        if (url == getUrl) {
+                            let temp_html = `<div class="container card mb-3 modalComments">
+                                            <div class="row g-0 comment">
+                                                <figure class="image is-48x48">
+                                                    <img class="is-rounded" src="https://bulma.io/images/placeholders/128x128.png">
+                                                </figure>
+                                                <div class="col-md-11 commentProfileBody">
+                                                    <div class="card-body">
+                                                        <p class="card-title">닉네임</p>
+                                                        <p class="card-text">${comment}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`
+                            $('#modalCommentsWrap').append(temp_html)
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div  class="buttons">
+                    <a class="button is-primary" href="/user/{{ user_info.username }}">
+                        <strong>마이페이지</strong>
+                    </a>
+                    <a id="logoutBtn" class="button is-primary logoutBtn">
+                        <strong onclick="logout()">로그아웃</strong>
+                    </a>
+                    <a id="loginBtn" class="button is-primary loginBtn">
+                        <strong onclick="login()">로그인</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="genre_title">
+    <a id="k-toggle">장르</a>
+</div>
+<div class="genre-div-k">
+    <button onclick="genre('발라드')" class="button">발라드</button>
+    <button onclick="genre('POP')" class="button">팝</button>
+    <button onclick="genre('댄스')" class="button">댄스</button>
+    <button onclick="genre('R&B','Soul')" class="button">R&B/소울</button>
+    <button onclick="genre('록','메탈')" class="button">록/메탈</button>
+    <button onclick="genre('랩','힙합')" class="button">랩/힙합</button>
+    <button onclick="genre('일렉트로니카','하우스','클럽')" class="button">일렉트로니카</button>
+    <button onclick="genre('인디')" class="button">인디</button>
+    <button onclick="genre('블루스','포크','컨트리')" class="button">블루스/포크/컨트리</button>
+</div>
+
+<div class="containers">
+    <div class="content" id="card-div">
+    </div>
+    <div class="moveTopBtn" style="cursor:pointer;" onclick="window.scrollTo(0,0);">
+        <span class="material-symbols-outlined" style="font-size: 50px">
+            expand_less
+        </span>
+    </div>
+</div>
+<div class="modalBox displayNone" id="modalBox">
+    <div class="modalBack">
+        <button onclick="closeBtn()" class="delete"></button>
+        <section class="modalTop" id="modalInfo">
+        </section>
+        {# 댓글 기록하는 창 #}
+        <div class="modalCommentBox">
+            <div class="input-group modalComment">
+                <span class="input-group-text">댓글 남기기</span>
+                <textarea id="commentWrite" placeholder="최대 90글자까지 입력이 가능합니다." class="form-control"
+                          aria-label="With textarea"></textarea>
+                <button id="commentBtn" onclick="comment_post()" type="button" class="btn btn-dark">댓글 쓰기</button>
+            </div>
+            {# 댓글 기록되는 창 #}
+            <div id="modalCommentsWrap">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
